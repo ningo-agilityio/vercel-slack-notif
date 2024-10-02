@@ -7,7 +7,7 @@ app.use(express.json());
 
 app.post('/vercel-deploy-hook', async (req, res) => {
   const payload = req.body;
-  console.log('debug log', payload, process.env.SLACK_WEBHOOK);
+  console.log('debug log', `Deployed at ${new Date().toLocaleString()}`);
   const message = {
     text: `*${payload.name}* was deployed successfully. You can test via this address: ` + process.env.DEPLOY_ADDRESS,
     attachments: [
@@ -35,7 +35,7 @@ app.post('/vercel-deploy-hook', async (req, res) => {
             short: false,
           },
         ],
-        footer: `Deployed at ${new Date(payload.createdAt).toLocaleString()}`,
+        footer: `Deployed at ${new Date().toLocaleString()}`,
       },
     ],
   };
