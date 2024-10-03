@@ -32,12 +32,12 @@ app.post('/vercel-deploy-hook', async (req, res) => {
           },
           {
             title: 'Environment',
-            value: payload.target,
+            value: payload.target?.toLowerCase(),
             short: true,
           },
           {
             title: 'Branch',
-            value: BRANCHES[payload.gitSource.ref],
+            value: BRANCHES[payload.gitSource.ref?.toLowerCase()],
             short: true,
           },
           {
