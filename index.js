@@ -7,9 +7,15 @@ app.use(express.json());
 
 app.post('/vercel-deploy-hook', async (req, res) => {
   const payload = req.body;
-  console.log('debug log', `Deployed at ${new Date().toLocaleString()}`);
+  console.log("Payload: ", payload)
+
+  // Do nothing for another status
+  if (payload.status !== 'success' || payload.status !== 'failure') {
+    return
+  }
+  const text = payload.status === 'success' ? `*${payload.name}* was deployed successfully. You can test via this address: ` + process.env.DEPLOY_ADDRESS : `*${payload.name}* was deployed fail. Please double-check the build log.`
   const message = {
-    text: `*${payload.name}* was deployed successfully. You can test via this address: ` + process.env.DEPLOY_ADDRESS,
+    text,
     attachments: [
       {
         title: 'Deployment Information',
@@ -35,7 +41,7 @@ app.post('/vercel-deploy-hook', async (req, res) => {
             short: false,
           },
         ],
-        footer: `Deployed at ${new Date().toLocaleString()}`,
+        footer: `Deployed at ${new Date(payload.createdAt).toLocaleString()}`,
       },
     ],
   };
