@@ -14,8 +14,8 @@ app.post('/vercel-deploy-hook', async (req, res) => {
   const payload = req.body;
   console.log("Payload: ", payload)
 
-  // Do nothing for another status
-  if (payload.status !== 'success' && payload.status !== 'failure') {
+  // Do nothing for another status or notifs for storybook app
+  if (payload.status !== 'success' && payload.status !== 'failure' || payload.target.includes('storybook')) {
     res.status(200).send('Notification did not send!');
   }
   const text = payload.status === 'success' ? `*${payload.name}* was deployed successfully. You can test via this address: ` + process.env.DEPLOY_ADDRESS : `*${payload.name}* was deployed fail. Please double-check the build log.`
@@ -32,12 +32,12 @@ app.post('/vercel-deploy-hook', async (req, res) => {
           },
           {
             title: 'Environment',
-            value: payload.target?.toLowerCase(),
+            value: payload.target?.split(" ")[0]?.trim().toLowerCase(),
             short: true,
           },
           {
             title: 'Branch',
-            value: BRANCHES[payload.gitSource.ref?.toLowerCase()],
+            value: BRANCHES[payload.gitSource.ref?.split(" ")[0]?.trim().toLowerCase()],
             short: true,
           },
           {
@@ -46,7 +46,7 @@ app.post('/vercel-deploy-hook', async (req, res) => {
             short: false,
           },
         ],
-        footer: `Deployed at ${new Date().toISOString()}`,
+        footer: `Deployed at ${new Date(payload.createdAt).toLocaleString()}`,
       },
     ],
   };
