@@ -10,8 +10,8 @@ app.post('/vercel-deploy-hook', async (req, res) => {
   console.log("Payload: ", payload)
 
   // Do nothing for another status
-  if (payload.status !== 'success' || payload.status !== 'failure') {
-    return
+  if (payload.status !== 'success' && payload.status !== 'failure') {
+    res.status(200).send('Notification did not send!');
   }
   const text = payload.status === 'success' ? `*${payload.name}* was deployed successfully. You can test via this address: ` + process.env.DEPLOY_ADDRESS : `*${payload.name}* was deployed fail. Please double-check the build log.`
   const message = {
@@ -41,7 +41,7 @@ app.post('/vercel-deploy-hook', async (req, res) => {
             short: false,
           },
         ],
-        footer: `Deployed at ${new Date(payload.createdAt).toLocaleString()}`,
+        footer: `Deployed at ${new Date().toLocaleString()}`,
       },
     ],
   };
