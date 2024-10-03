@@ -5,6 +5,11 @@ require('dotenv').config()
 const app = express();
 app.use(express.json());
 
+const BRANCHES = {
+  production: 'main',
+  preview: 'dev/develop',
+  dev: 'dev/develop',
+}
 app.post('/vercel-deploy-hook', async (req, res) => {
   const payload = req.body;
   console.log("Payload: ", payload)
@@ -32,7 +37,7 @@ app.post('/vercel-deploy-hook', async (req, res) => {
           },
           {
             title: 'Branch',
-            value: payload.gitSource.ref,
+            value: BRANCHES[payload.gitSource.ref],
             short: true,
           },
           {
@@ -41,7 +46,7 @@ app.post('/vercel-deploy-hook', async (req, res) => {
             short: false,
           },
         ],
-        footer: `Deployed at ${new Date().toLocaleString()}`,
+        footer: `Deployed at ${new Date().toISOString()}`,
       },
     ],
   };
