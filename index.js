@@ -59,7 +59,7 @@ app.post('/vercel-deploy-hook', async (req, res) => {
             },
             isValid(payload.target) ? {
               title: 'Environment',
-              value: payload.target?.split(" ")[0]?.trim().toLowerCase(),
+              value: branchName ? ENVIRONMENTS[branchName] : payload.target?.split(" ")[0]?.trim().toLowerCase(),
               short: true,
             } : null,
             isValid(payload.gitSource.ref) ? {
