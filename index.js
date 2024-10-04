@@ -5,6 +5,8 @@ require('dotenv').config()
 const app = express();
 app.use(express.json());
 
+const isValid = (str) => str && str !== 'null'
+
 const BRANCHES = {
   production: 'main',
   preview: 'dev/develop',
@@ -33,17 +35,17 @@ app.post('/vercel-deploy-hook', async (req, res) => {
               value: payload.name,
               short: true,
             },
-            payload.target ? {
+            isValid(payload.target) ? {
               title: 'Environment',
               value: payload.target?.split(" ")[0]?.trim().toLowerCase(),
               short: true,
             } : null,
-            payload.gitSource.ref ? {
+            isValid(payload.gitSource.ref) ? {
               title: 'Branch',
               value: BRANCHES[payload.gitSource.ref?.split(" ")[0]?.trim().toLowerCase()],
               short: true,
             } : null,
-            payload.gitSource.message ? {
+            isValid(payload.gitSource.message) ? {
               title: 'Commit Message',
               value: payload.gitSource.message,
               short: false,
