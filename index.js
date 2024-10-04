@@ -49,7 +49,7 @@ app.post('/vercel-deploy-hook', async (req, res) => {
               short: false,
             } : null,
           ].filter(item => !!item),
-          footer: `Deployed at ${new Date(payload.createdAt).toLocaleString()}`,
+          footer: `Deployed at ${payload.createdAt ? new Date(payload.createdAt).toLocaleString() : new Date().toLocaleString()}`,
         },
       ],
     };
