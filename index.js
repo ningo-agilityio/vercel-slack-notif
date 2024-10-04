@@ -18,38 +18,60 @@ app.post('/vercel-deploy-hook', async (req, res) => {
   if (payload.target.includes('storybook')) {
     res.status(200).send('Notification did not send!');
   }
-  const text = payload.status === 'success' ? `*${payload.name}* was deployed successfully. You can test via this address: ` + process.env.DEPLOY_ADDRESS : `*${payload.name}* was deployed fail. Please double-check the build log.`
-  const message = {
-    text,
-    attachments: [
-      {
-        title: 'Deployment Information',
-        fields: [
-          {
-            title: 'Project',
-            value: payload.name,
-            short: true,
-          },
-          {
-            title: 'Environment',
-            value: payload.target?.split(" ")[0]?.trim().toLowerCase(),
-            short: true,
-          },
-          {
-            title: 'Branch',
-            value: BRANCHES[payload.gitSource.ref?.split(" ")[0]?.trim().toLowerCase()],
-            short: true,
-          },
-          {
-            title: 'Commit Message',
-            value: payload.gitSource.message,
-            short: false,
-          },
-        ],
-        footer: `Deployed at ${new Date(payload.createdAt).toLocaleString()}`,
-      },
-    ],
-  };
+
+  let text, message
+  if (payload.status === 'success') {
+    text = `*${payload.name}* was deployed successfully. You can test via this address: ` + process.env.DEPLOY_ADDRESS
+    message = {
+      text,
+      attachments: [
+        {
+          title: 'Deployment Information',
+          fields: [
+            {
+              title: 'Project',
+              value: payload.name,
+              short: true,
+            },
+            {
+              title: 'Environment',
+              value: payload.target?.split(" ")[0]?.trim().toLowerCase(),
+              short: true,
+            },
+            {
+              title: 'Branch',
+              value: BRANCHES[payload.gitSource.ref?.split(" ")[0]?.trim().toLowerCase()],
+              short: true,
+            },
+            {
+              title: 'Commit Message',
+              value: payload.gitSource.message,
+              short: false,
+            },
+          ],
+          footer: `Deployed at ${new Date(payload.createdAt).toLocaleString()}`,
+        },
+      ],
+    };
+  } else {
+    text  = `*${payload.name}* was deployed fail. Please double-check the build log.`
+    message = {
+      text,
+      attachments: [
+        {
+          title: 'Deployment Information',
+          fields: [
+            {
+              title: 'Project',
+              value: payload.name,
+              short: true,
+            },
+          ]
+        }
+      ]
+    }
+  }
+  
 
   try {
     await axios.post(process.env.SLACK_WEBHOOK, message);
