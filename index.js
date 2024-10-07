@@ -32,7 +32,7 @@ app.post('/vercel-deploy-hook', async (req, res) => {
   console.log("Payload: ", payload)
 
   // Do nothing for storybook app
-  if (payload.target.includes('storybook')) {
+  if (payload.target.includes('storybook') || !payload.target.includes('app') || !payload.status || payload.status === 'null') {
     res.status(200).send('Notification did not send!');
   }
 
