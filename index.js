@@ -27,15 +27,17 @@ const ENVIRONMENTS = {
   develop: 'development',
 }
 
-const NOT_SEND_NOTIF_APP = ['storybook', 'wons-storybook']
+const NOT_SEND_NOTIFICATION_APP = process.env.NOT_SEND_NOTIFICATION_APP.split(',')
+
 app.post('/vercel-deploy-hook', async (req, res) => {
   const payload = req.body;
   console.log("Payload: ", payload)
 
   // Do nothing for storybook app
   // Wons: Production – wons-storybook
-  if (!!NOT_SEND_NOTIF_APP.find(item => payload.target.includes(item)) || !payload.status || payload.status === 'null') {
+  if (!!NOT_SEND_NOTIFICATION_APP.find(item => payload.target.includes(item)) || !payload.status || payload.status === 'null') {
     res.status(200).send('Notification did not send!');
+    return;
   }
 
   let text, message
